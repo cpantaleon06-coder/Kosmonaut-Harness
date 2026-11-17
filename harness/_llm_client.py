@@ -1,14 +1,16 @@
 import os
-from dotenv import load_dotenv
 from openai import OpenAI
+from openai.types.chat import ChatCompletion
 
-load_dotenv()
 
-client = OpenAI(base_url="http://localhost:11434/v1/", api_key="ollama")
+client = OpenAI(
+    base_url="http://localhost:11434/v1/", 
+    api_key="ollama"
+    )
 
 def chat(messages, tools):
     resp = client.chat.completions.create(
-        model="gemma4",
+        model="gemma4:latest",
         messages=messages,
         tools=tools,
     )
