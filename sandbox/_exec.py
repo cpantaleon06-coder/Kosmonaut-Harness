@@ -1,4 +1,3 @@
-from base64 import decode
 import io
 import posixpath
 import shlex
@@ -23,8 +22,8 @@ def run(container_id: str, command: str, timeout: int = 60) -> dict:
     )
     text=output.decode("utf-8", errors="replace")
     if len(text)> MAX_OUTPUT:
-        text = text[MAX_OUTPUT]+ "\n...[output truncated]"
-    return{"exit_dode":exit_code, "output":text}
+        text = text[:MAX_OUTPUT] + "\n...[output truncated]"
+    return{"exit_code": exit_code, "output":text}
 
 def write_file(container_id:str, path: str,content: str) -> None:
     container=client.containers.get(container_id)
