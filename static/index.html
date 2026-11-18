@@ -28,13 +28,31 @@
       download.hidden = true;
       reply.textContent = "Working... this can take a few minutes.";
       try {
-        const response = await fetch("/api/message", {
+        // Start a job and poll it: one long request gets dropped by the browser after ~5 minutes.
+        const response = await fetch("/api/jobs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: task.value }),
         });
         if (!response.ok) throw new Error("Server error " + response.status);
-        const data = await response.json();
+        const { job_id } = await response.json();
+        const started = Date.now();
+        let job = { status: "running" };
+        while (job.status === "running") {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          let poll;
+          try {
+            poll = await fetch("/api/jobs/" + job_id);
+          } catch {
+            continue; // server busy or reloading: try again
+          }
+          if (poll.status === 404) throw new Error("Job lost: the server restarted during the run.");
+          if (!poll.ok) continue;
+          job = await poll.json();
+          reply.textContent = "Working... " + Math.round((Date.now() - started) / 1000) + " s";
+        }
+        if (job.status === "error") throw new Error(job.error);
+        const data = job.result;
         reply.textContent = data.reply;
         download.href = "/api/projects/" + data.project_id + "/download";
         download.hidden = false;
