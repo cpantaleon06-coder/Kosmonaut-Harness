@@ -24,4 +24,3 @@ def get_archive(project_id: str) -> bytes | None:
     if project is None:
         return None
     return db.download_archive(project["archive_key"])
-handle_message  is  the  core  data  flow:  create  container,  run  agent,  export  files,  destroy  container,  upload  files,  save  row.
