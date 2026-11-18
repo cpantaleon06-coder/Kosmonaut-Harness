@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cloud Harness</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; }
+    textarea { width: 100%; height: 120px; font-size: 16px; }
+    button { margin-top: 8px; padding: 8px 20px; font-size: 16px; }
+    pre { background: #f4f4f4; padding: 12px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Cloud Harness</h1>
+  <textarea id="task" placeholder="Describe a coding task..."></textarea>
+  <button id="send">Send</button>
+  <pre id="reply"></pre>
+  <a id="download" hidden>Download project files (.tar)</a>
+
+  <script>
+    const task = document.getElementById("task");
+    const send = document.getElementById("send");
+    const reply = document.getElementById("reply");
+    const download = document.getElementById("download");
+
+    send.addEventListener("click", async () => {
+      send.disabled = true;
+      download.hidden = true;
+      reply.textContent = "Working... this can take a few minutes.";
+      try {
+        const response = await fetch("/api/message", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: task.value }),
+        });
+        if (!response.ok) throw new Error("Server error " + response.status);
+        const data = await response.json();
+        reply.textContent = data.reply;
+        download.href = "/api/projects/" + data.project_id + "/download";
+        download.hidden = false;
+      } catch (error) {
+        reply.textContent = "Error: " + error.message;
+      } finally {
+        send.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
