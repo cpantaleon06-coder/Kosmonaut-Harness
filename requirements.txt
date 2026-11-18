@@ -16,11 +16,12 @@ jiter==0.19.0
 jmespath==1.1.0
 openai==3.51.0
 opentelemetry-api==1.45.2
-psycopg==3.3.9
 psycopg-binary==3.3.9
+psycopg==3.3.9
 pydantic==2.14.3
 pydantic_core==2.50.4
 python-dateutil==2.9.0.post0
+python-dotenv==1.2.4
 requests==2.34.2
 s3transfer==0.19.3
 six==1.17.0
